@@ -16,9 +16,12 @@ const projectLabels: Record<string, string> = {
   brasil: 'BRASIL',
   patoroco: 'PATOROCO',
 }
+const projectFiles = import.meta.glob<string>('../projetos/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' })
+const projectFilenames = new Set(Object.keys(projectFiles).map((path) => path.split('/').pop()?.toLowerCase()))
+const artworkFiles = import.meta.glob<string>('../assets/artes/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' })
 const portfolioFiles = {
-  ...import.meta.glob<string>('../assets/artes/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' }),
-  ...import.meta.glob<string>('../projetos/*.{png,jpg,jpeg,webp}', { eager: true, query: '?url', import: 'default' }),
+  ...Object.fromEntries(Object.entries(artworkFiles).filter(([path]) => !projectFilenames.has(path.split('/').pop()?.toLowerCase()))),
+  ...projectFiles,
 }
 const portfolioImages = Object.entries(portfolioFiles)
   .map(([path, src]) => {
